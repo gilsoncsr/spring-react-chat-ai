@@ -1,0 +1,24 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    restart: unless-stopped
+
+  backend:
+    build: .
+    container_name: chat-backend
+    depends_on:
+      - ollama
+    environment:
+      - SPRING_AI_OLLAMA_BASE_URL=http://ollama:11434
+      - SPRING_AI_OLLAMA_CHAT_OPTIONS_MODEL=mistral
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+volumes:
+  ollama:
